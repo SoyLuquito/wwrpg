@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Red Creek · O Convite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Marck+Script&family=Satisfy&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ===== RESET E ESTILOS GERAIS ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #1a1008;
+      background-image: radial-gradient(ellipse at 20% 30%, #2d1a0a, #0d0804);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 3rem 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+      font-family: 'Georgia', 'Times New Roman', serif;
+    }
+
+    /* ===== NÉVOA (FOG) ===== */
+    .nevoa {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+      background: 
+        radial-gradient(ellipse at 20% 50%, rgba(200, 190, 170, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(180, 170, 150, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(190, 180, 160, 0.05) 0%, transparent 40%);
+      animation: nevoaMovimento 20s ease-in-out infinite alternate;
+    }
+
+    .nevoa::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse at 60% 40%, rgba(210, 200, 180, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 30% 70%, rgba(190, 180, 160, 0.03) 0%, transparent 40%);
+      animation: nevoaMovimento2 25s ease-in-out infinite alternate;
+    }
+
+    @keyframes nevoaMovimento {
+      0% { transform: translateX(-5%) scale(1); opacity: 0.6; }
+      100% { transform: translateX(5%) scale(1.1); opacity: 1; }
+    }
+
+    @keyframes nevoaMovimento2 {
+      0% { transform: translateX(5%) scale(1.1); opacity: 0.5; }
+      100% { transform: translateX(-5%) scale(1); opacity: 0.8; }
+    }
+
+    /* ===== PARTÍCULAS DE POEIRA ===== */
+    #poeira {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.6;
+    }
+
+    /* ===== TEXTURA DE FUNDO ===== */
+    .textura-fundo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+
+    .container-carta {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* ===== CARTA PRINCIPAL ===== */
+    .carta {
+      background: #f4e8d8;
+      background-image: linear-gradient(165deg, #ede0ce 0%, #f5ebdb 25%, #f0e5d3 60%, #e4d5c0 100%);
+      padding: 3.5rem 4.5rem 3rem;
+      border-radius: 4px 45px 4px 45px;
+      position: relative;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.7), 0 0 0 2px #b89a78, 0 0 0 8px #c9af8b, inset 0 0 80px rgba(80, 50, 20, 0.08);
+      transform: rotate(0.2deg);
+      transition: transform 0.3s ease;
+    }
+
+    /* ===== BORDA INTERNA ===== */
+    .borda-interna {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      border: 1px solid rgba(150, 120, 90, 0.15);
+      border-radius: 2px 35px 2px 35px;
+      pointer-events: none;
+    }
+
+    /* ===== DESGASTES ===== */
+    .desgaste {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50%;
+    }
+    .desgaste-1 {
+      top: -6px;
+      right: 20px;
+      width: 30px;
+      height: 20px;
+      background: radial-gradient(ellipse at 50% 100%, rgba(80, 50, 20, 0.08), transparent);
+      transform: rotate(-10deg);
+    }
+    .desgaste-2 {
+      bottom: -4px;
+      left: 40px;
+      width: 40px;
+      height: 15px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(80, 50, 20, 0.06), transparent);
+      transform: rotate(5deg);
+    }
+    .desgaste-3 {
+      top: 30%;
+      right: -2px;
+      width: 15px;
+      height: 30px;
+      background: radial-gradient(ellipse at 0% 50%, rgba(80, 50, 20, 0.05), transparent);
+    }
+
+    /* ===== MANCHAS ===== */
+    .mancha {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .mancha-1 {
+      width: 180px;
+      height: 140px;
+      top: 12%;
+      right: 8%;
+      background: radial-gradient(ellipse, rgba(160, 130, 90, 0.06), transparent 70%);
+      transform: rotate(-15deg);
+    }
+    .mancha-2 {
+      width: 250px;
+      height: 180px;
+      bottom: 18%;
+      left: -6%;
+      background: radial-gradient(ellipse, rgba(140, 110, 70, 0.05), transparent 70%);
+      transform: rotate(10deg);
+    }
+
+    /* ===== CABEÇALHO ===== */
+    .cabecalho {
+      margin-bottom: 2.2rem;
+      position: relative;
+    }
+    .data {
+      font-family: 'Alex Brush', 'Marck Script', cursive;
+      font-size: 1.8rem;
+      color: #3d2814;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 3px rgba(180, 150, 110, 0.15);
+      display: block;
+      opacity: 0.9;
+    }
+    .linha-divisoria {
+      margin-top: 0.8rem;
+      height: 1.5px;
+      background: linear-gradient(to right, transparent 0%, rgba(150, 120, 90, 0.25) 15%, rgba(150, 120, 90, 0.4) 50%, rgba(150, 120, 90, 0.25) 85%, transparent 100%);
+    }
+
+    /* ===== CORPO DA CARTA ===== */
+    .conteudo {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .linha {
+      font-family: 'Marck Script', 'Satisfy', 'Alex Brush', cursive;
+      font-size: 1.25rem;
+      line-height: 1.8;
+      color: #2a1d0d;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 2px rgba(240, 230, 210, 0.15);
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      font-weight: 400;
+      text-align: justify;
+    }
+    .linha.visivel {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .citacao {
+      padding-left: 2rem;
+      border-left: 3px solid rgba(150, 120, 90, 0.25);
+      font-style: italic;
+      color: #3a2819;
+      font-size: 1.4rem;
+      font-family: 'Satisfy', cursive;
+      margin: 0.2rem 0;
+      text-align: left;
+    }
+    .destaque {
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #4f2d12;
+      font-family: 'Alex Brush', cursive;
+      text-shadow: 0 0 40px rgba(180, 120, 70, 0.08);
+      margin: 0.3rem 0;
+      text-transform: none;
+      text-align: center;
+    }
+    .interrompida {
+      font-size: 2.8rem;
+      letter-spacing: 14px;
+      color: #6a4a2a;
+      text-align: center;
+      opacity: 0.3;
+      font-family: 'Marck Script', cursive;
+      margin: -0.2rem 0;
+    }
+
+    /* ===== RODAPÉ ===== */
+    .rodape {
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(150, 120, 90, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .assinatura {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .assinatura-texto {
+      font-family: 'Marck Script', cursive;
+      font-size: 1.1rem;
+      color: #5a3f28;
+      opacity: 0.7;
+      font-style: italic;
+    }
+    .assinatura-nome {
+      font-family: 'Alex Brush', cursive;
+      font-size: 1.4rem;
+      color: #3d2814;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+
+    /* ===== BOTÃO - TEXTO ESCURO VISÍVEL ===== */
+    .botao-carta {
+      display: inline-block;
+      position: relative;
+      text-decoration: none;
+      font-family: 'Alex Brush', 'Marck Script', cursive;
+      font-size: 1.3rem;
+      letter-spacing: 0.5px;
+      color: #2a1d0d;
+      padding: 0.7rem 2.5rem;
+      background: #d4c4a8;
+      background-image: linear-gradient(145deg, #e8d5b8, #d4c4a8);
+      border: 2px solid #8b6b4a;
+      border-radius: 30px 6px 30px 6px;
+      box-shadow: inset 0 2px 8px rgba(255, 215, 150, 0.3), 0 6px 20px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      text-shadow: 0 1px 2px rgba(240, 230, 210, 0.5);
+      transform: rotate(-0.3deg);
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .botao-texto {
+      position: relative;
+      z-index: 2;
+      color: #2a1d0d;
+      font-weight: 500;
+    }
+    .botao-efeito {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,215,150,0.2), transparent);
+      transition: left 0.6s ease;
+    }
+    .botao-carta:hover {
+      background: linear-gradient(145deg, #f0e2cc, #dcc9b0);
+      transform: scale(1.02) rotate(0.2deg);
+      box-shadow: inset 0 2px 12px rgba(255, 215, 150, 0.4), 0 8px 25px rgba(0,0,0,0.4);
+      color: #1a1008;
+    }
+    .botao-carta:hover .botao-texto {
+      color: #1a1008;
+    }
+    .botao-carta:hover .botao-efeito {
+      left: 100%;
+    }
+    .botao-carta:active {
+      transform: scale(0.96) rotate(0deg);
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 5, 2, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      padding: 1.5rem;
+    }
+    .modal-overlay.ativo {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-carta {
+      background: #f4e8d8;
+      background-image: linear-gradient(165deg, #ede0ce 0%, #f5ebdb 25%, #f0e5d3 60%, #e4d5c0 100%);
+      padding: 2.5rem 3rem;
+      border-radius: 4px 40px 4px 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 0 2px #b89a78, 0 0 0 8px #c9af8b;
+      transform: scale(0.9) rotate(-1deg);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-overlay.ativo .modal-carta {
+      transform: scale(1) rotate(0.2deg);
+    }
+    .modal-carta::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 1px solid rgba(150, 120, 90, 0.12);
+      border-radius: 2px 30px 2px 30px;
+      pointer-events: none;
+    }
+    .modal-conteudo {
+      position: relative;
+      z-index: 2;
+    }
+    .modal-titulo {
+      font-family: 'Alex Brush', 'Marck Script', cursive;
+      font-size: 2rem;
+      color: #3d2814;
+      text-align: center;
+      margin-bottom: 0.3rem;
+      letter-spacing: 2px;
+    }
+    .modal-descricao {
+      font-family: 'Marck Script', cursive;
+      font-size: 1.1rem;
+      color: #5a3f28;
+      text-align: center;
+      opacity: 0.7;
+      margin-bottom: 1.8rem;
+      font-style: italic;
+    }
+
+    /* ===== FORMULÁRIO ===== */
+    .form-assinatura {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .campo-grupo {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .campo-label {
+      font-family: 'Marck Script', cursive;
+      font-size: 1.1rem;
+      color: #3d2814;
+      letter-spacing: 0.5px;
+    }
+    .campo-input,
+    .campo-textarea {
+      font-family: 'Marck Script', 'Satisfy', cursive;
+      font-size: 1.1rem;
+      padding: 0.7rem 1rem;
+      background: rgba(255, 248, 240, 0.6);
+      border: 2px solid rgba(150, 120, 90, 0.2);
+      border-radius: 8px;
+      color: #2a1d0d;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    .campo-input:focus,
+    .campo-textarea:focus {
+      border-color: #b89a78;
+      background: rgba(255, 248, 240, 0.8);
+      box-shadow: 0 0 20px rgba(150, 120, 90, 0.1);
+    }
+    .campo-input::placeholder,
+    .campo-textarea::placeholder {
+      color: rgba(90, 63, 40, 0.3);
+      font-style: italic;
+    }
+    .campo-textarea {
+      resize: vertical;
+      min-height: 60px;
+      font-family: 'Marck Script', cursive;
+    }
+
+    /* ===== BOTÕES DO MODAL ===== */
+    .modal-acoes {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .btn-cancelar,
+    .btn-assinar {
+      flex: 1;
+      padding: 0.7rem 1.5rem;
+      border: 2px solid #4f321b;
+      border-radius: 20px 4px 20px 4px;
+      font-family: 'Alex Brush', 'Marck Script', cursive;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .btn-cancelar {
+      background: transparent;
+      color: #5a3f28;
+      border-color: rgba(150, 120, 90, 0.3);
+    }
+    .btn-cancelar:hover {
+      background: rgba(150, 120, 90, 0.08);
+      transform: scale(1.02);
+    }
+    .btn-assinar {
+      background: linear-gradient(145deg, #8b6b4a, #5a3f28);
+      color: #efe6d2;
+      border-color: #4f321b;
+      box-shadow: inset 0 2px 8px rgba(255, 215, 150, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-assinar:hover:not(:disabled) {
+      background: linear-gradient(145deg, #a07f5c, #6a4d32);
+      transform: scale(1.02);
+      box-shadow: inset 0 2px 12px rgba(255, 215, 150, 0.15);
+    }
+    .btn-assinar:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: scale(0.98);
+    }
+    .btn-assinar-texto {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ===== STATUS DO MODAL ===== */
+    .modal-status {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: 8px;
+      font-family: 'Marck Script', cursive;
+      font-size: 1.1rem;
+      text-align: center;
+      opacity: 0;
+      transition: all 0.4s ease;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-status.sucesso {
+      opacity: 1;
+      background: rgba(60, 120, 60, 0.1);
+      color: #2d6b2d;
+      border: 1px solid rgba(60, 120, 60, 0.2);
+    }
+    .modal-status.erro {
+      opacity: 1;
+      background: rgba(180, 60, 60, 0.1);
+      color: #8b2d2d;
+      border: 1px solid rgba(180, 60, 60, 0.2);
+    }
+
+    /* ===== SCROLLBAR DO MODAL ===== */
+    .modal-carta::-webkit-scrollbar {
+      width: 6px;
+    }
+    .modal-carta::-webkit-scrollbar-track {
+      background: rgba(150, 120, 90, 0.05);
+      border-radius: 3px;
+    }
+    .modal-carta::-webkit-scrollbar-thumb {
+      background: rgba(150, 120, 90, 0.3);
+      border-radius: 3px;
+    }
+    .modal-carta::-webkit-scrollbar-thumb:hover {
+      background: rgba(150, 120, 90, 0.5);
+    }
+
+    /* ===== RESPONSIVIDADE ===== */
+    @media (max-width: 768px) {
+      body { padding: 1.5rem 1rem; }
+      .carta { padding: 2rem 2rem 2rem; border-radius: 4px 30px 4px 30px; }
+      .borda-interna { top: 8px; left: 8px; right: 8px; bottom: 8px; }
+      .linha { font-size: 1.1rem; line-height: 1.7; }
+      .destaque { font-size: 1.7rem; }
+      .citacao { font-size: 1.2rem; padding-left: 1.2rem; }
+      .data { font-size: 1.4rem; }
+      .botao-carta { font-size: 1.1rem; padding: 0.6rem 2rem; }
+      .rodape { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .assinatura-nome { font-size: 1.2rem; }
+      .mancha-1, .mancha-2 { display: none; }
+      .modal-carta { padding: 1.8rem 1.5rem; border-radius: 4px 30px 4px 30px; }
+      .modal-titulo { font-size: 1.6rem; }
+      .modal-descricao { font-size: 1rem; }
+      .campo-input, .campo-textarea { font-size: 1rem; padding: 0.6rem 0.8rem; }
+      .btn-cancelar, .btn-assinar { font-size: 1rem; padding: 0.6rem 1rem; }
+      .modal-acoes { flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .carta { padding: 1.5rem 1.2rem 1.5rem; }
+      .linha { font-size: 0.95rem; line-height: 1.6; }
+      .destaque { font-size: 1.4rem; }
+      .interrompida { font-size: 2.2rem; letter-spacing: 10px; }
+      .citacao { font-size: 1rem; padding-left: 0.8rem; }
+      .botao-carta { font-size: 1rem; padding: 0.5rem 1.5rem; width: 100%; text-align: center; }
+      .data { font-size: 1.2rem; }
+      .assinatura-nome { font-size: 1rem; }
+      .borda-interna { display: none; }
+      .modal-carta { padding: 1.2rem 1rem; }
+      .modal-titulo { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NÉVOA -->
+  <div class="nevoa" aria-hidden="true"></div>
+  
+  <!-- partículas de poeira -->
+  <canvas id="poeira" aria-hidden="true"></canvas>
+  
+  <!-- textura de fundo -->
+  <div class="textura-fundo" aria-hidden="true"></div>
+
+  <div class="container-carta">
+    <main class="carta" id="carta">
+      <!-- elementos decorativos -->
+      <div class="desgaste desgaste-1" aria-hidden="true"></div>
+      <div class="desgaste desgaste-2" aria-hidden="true"></div>
+      <div class="desgaste desgaste-3" aria-hidden="true"></div>
+      <div class="mancha mancha-1" aria-hidden="true"></div>
+      <div class="mancha mancha-2" aria-hidden="true"></div>
+      <div class="borda-interna" aria-hidden="true"></div>
+
+      <!-- cabeçalho -->
+      <header class="cabecalho">
+        <span class="data">Red Creek, 1876</span>
+        <div class="linha-divisoria"></div>
+      </header>
+
+      <!-- corpo da carta -->
+      <section class="conteudo" id="conteudo">
+        <p class="linha" data-delay="0">A quem encontrar esta carta,</p>
+        
+        <p class="linha" data-delay="1">Se esta chegou até você, é porque estamos precisando de ajuda. Red Creek é uma cidade pequena, perdida no meio do Oeste. Aqui, pouca coisa acontece. Pelo menos, era o que pensávamos.</p>
+        
+        <p class="linha" data-delay="2">Há três meses, um trem desapareceu nos arredores da cidade. Nenhum corpo, nenhum destroço, nenhuma explicação. Até que, esta semana, ele voltou. O trem estava intacto, sem maquinista e sem passageiros. Havia apenas um homem.</p>
+        
+        <p class="linha" data-delay="3">Ele parecia ter pouco mais de vinte anos. O problema é que seu nome consta nos registros de um trem que desapareceu há trinta anos.</p>
+        
+        <p class="linha citacao" data-delay="4">"Eles estão vindo atrás de mim."</p>
+        
+        <p class="linha" data-delay="5">Desde então, temos ouvido o apito do trem durante a noite. Mas não há nenhum trem nos trilhos.</p>
+        
+        <p class="linha" data-delay="6">Não sei o que aconteceu naquela viagem. Também não sei quem são "eles". Só sei que, se você tiver coragem para descobrir...</p>
+        
+        <p class="linha destaque" data-delay="7">Venha para Red Creek</p>
+        
+        <p class="linha" data-delay="8">Procure pela estação.</p>
+        
+        <p class="linha" data-delay="9">E, se ouvir o apito... não siga o som.</p>
+        
+        <p class="linha" data-delay="10">Eu explicaria o motivo, mas—</p>
+        
+        <p class="linha interrompida" data-delay="11">…</p>
+      </section>
+
+      <!-- rodapé -->
+      <footer class="rodape">
+        <div class="assinatura">
+          <span class="assinatura-texto">Com esperança,</span>
+          <span class="assinatura-nome">Um sobrevivente de Red Creek</span>
+        </div>
+        <button class="botao-carta" id="botaoResposta">
+          <span class="botao-texto">Responder à carta</span>
+          <span class="botao-efeito"></span>
+        </button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Modal de assinatura -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-carta">
+      <div class="modal-conteudo">
+        <h2 class="modal-titulo">✧ Assine a carta ✧</h2>
+        <p class="modal-descricao">Coloque seu nome como testemunha desta história</p>
+        
+        <form id="formAssinatura" class="form-assinatura">
+          <div class="campo-grupo">
+            <label for="nomeAssinante" class="campo-label">Seu nome</label>
+            <input 
+              type="text" 
+              id="nomeAssinante" 
+              class="campo-input" 
+              placeholder="Digite seu nome aqui..."
+              required
+              autocomplete="off"
+            />
+          </div>
+          
+          <div class="campo-grupo">
+            <label for="mensagemAssinante" class="campo-label">Mensagem (opcional)</label>
+            <textarea 
+              id="mensagemAssinante" 
+              class="campo-textarea" 
+              placeholder="Deixe uma mensagem..."
+              rows="3"
+            ></textarea>
+          </div>
+          
+          <div class="modal-acoes">
+            <button type="button" class="btn-cancelar" id="btnCancelar">Cancelar</button>
+            <button type="submit" class="btn-assinar" id="btnAssinar">
+              <span class="btn-assinar-texto">Assinar ✧</span>
+            </button>
+          </div>
+        </form>
+        
+        <div class="modal-status" id="modalStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    // ============================================
+    // IMPORTAÇÕES FIREBASE
+    // ============================================
+    import { initializeApp } from "firebase/app";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+    
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDNDltWO5NyPz78JSDqi1iPB0JN9JqYVTQ",
+      authDomain: "wildwest-9e2b6.firebaseapp.com",
+      projectId: "wildwest-9e2b6",
+      storageBucket: "wildwest-9e2b6.firebasestorage.app",
+      messagingSenderId: "894705751453",
+      appId: "1:894705751453:web:030edc3437fdb8981bcb74",
+      measurementId: "G-JDJ1SVCHH4"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ============================================
+    // ELEMENTOS DO DOM
+    // ============================================
+    const botaoResponder = document.getElementById('botaoResposta');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const btnCancelar = document.getElementById('btnCancelar');
+    const formAssinatura = document.getElementById('formAssinatura');
+    const inputNome = document.getElementById('nomeAssinante');
+    const inputMensagem = document.getElementById('mensagemAssinante');
+    const modalStatus = document.getElementById('modalStatus');
+    const btnAssinar = document.getElementById('btnAssinar');
+
+    // ============================================
+    // ABRIR MODAL
+    // ============================================
+    botaoResponder.addEventListener('click', () => {
+      modalOverlay.classList.add('ativo');
+      inputNome.focus();
+      modalStatus.textContent = '';
+      modalStatus.className = 'modal-status';
+    });
+
+    // ============================================
+    // FECHAR MODAL
+    // ============================================
+    function fecharModal() {
+      modalOverlay.classList.remove('ativo');
+      formAssinatura.reset();
+      modalStatus.textContent = '';
+      modalStatus.className = 'modal-status';
+      btnAssinar.disabled = false;
+      btnAssinar.innerHTML = '<span class="btn-assinar-texto">Assinar ✧</span>';
+    }
+
+    btnCancelar.addEventListener('click', fecharModal);
+    
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        fecharModal();
+      }
+    });
+
+    // ============================================
+    // SUBMETER ASSINATURA
+    // ============================================
+    formAssinatura.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const nome = inputNome.value.trim();
+      const mensagem = inputMensagem.value.trim();
+      
+      if (!nome) {
+        mostrarStatus('Por favor, digite seu nome.', 'erro');
+        return;
+      }
+
+      // Desabilitar botão durante envio
+      btnAssinar.disabled = true;
+      btnAssinar.innerHTML = '<span class="btn-assinar-texto">Enviando...</span>';
+      modalStatus.className = 'modal-status';
+
+      try {
+        // Salvar no Firestore
+        await addDoc(collection(db, 'assinaturas'), {
+          nome: nome,
+          mensagem: mensagem || '',
+          data: serverTimestamp(),
+          timestamp: new Date().toISOString()
+        });
+
+        mostrarStatus(`✅ Assinatura registrada! Obrigado, ${nome}. Sua marca ficará em Red Creek.`, 'sucesso');
+        
+        // Fechar modal após 2.5 segundos
+        setTimeout(() => {
+          fecharModal();
+          // Pequeno efeito na carta
+          const carta = document.getElementById('carta');
+          carta.style.transition = 'transform 0.3s ease';
+          carta.style.transform = 'rotate(0.5deg) scale(1.01)';
+          setTimeout(() => {
+            carta.style.transform = 'rotate(0.2deg) scale(1)';
+          }, 500);
+        }, 2500);
+
+      } catch (error) {
+        console.error('Erro ao salvar assinatura:', error);
+        mostrarStatus('❌ Erro ao registrar sua assinatura. Tente novamente.', 'erro');
+        btnAssinar.disabled = false;
+        btnAssinar.innerHTML = '<span class="btn-assinar-texto">Assinar ✧</span>';
+      }
+    });
+
+    // ============================================
+    // FUNÇÃO PARA MOSTRAR STATUS
+    // ============================================
+    function mostrarStatus(mensagem, tipo) {
+      modalStatus.textContent = mensagem;
+      modalStatus.className = 'modal-status ' + tipo;
+    }
+
+    // ============================================
+    // 1. REVELAÇÃO DE TEXTO COM SCROLL
+    // ============================================
+    const linhas = document.querySelectorAll('.linha');
+    
+    function revelarLinhas() {
+      const windowHeight = window.innerHeight;
+      const triggerPoint = windowHeight * 0.82;
+      
+      linhas.forEach((linha) => {
+        const rect = linha.getBoundingClientRect();
+        const delay = parseFloat(linha.dataset.delay) || 0;
+        
+        if (rect.top < triggerPoint) {
+          setTimeout(() => {
+            linha.classList.add('visivel');
+          }, delay * 100);
+        }
+      });
+    }
+
+    window.addEventListener('load', revelarLinhas);
+    window.addEventListener('scroll', revelarLinhas);
+    window.addEventListener('resize', revelarLinhas);
+
+    // ============================================
+    // 2. POEIRA REFINADA (MAIS PARTÍCULAS)
+    // ============================================
+    const canvas = document.getElementById('poeira');
+    const ctx = canvas.getContext('2d');
+    
+    let particulas = [];
+    const NUM_PARTICULAS = 120; // Aumentado para mais poeira
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    
+    class Particula {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.tamanho = Math.random() * 2.5 + 0.5;
+        this.velocidadeX = (Math.random() - 0.5) * 0.2;
+        this.velocidadeY = (Math.random() - 0.5) * 0.2 - 0.06;
+        this.opacidade = Math.random() * 0.35 + 0.05;
+        this.angulo = Math.random() * Math.PI * 2;
+        this.velocidadeAngulo = (Math.random() - 0.5) * 0.006;
+      }
+      
+      update() {
+        this.x += this.velocidadeX + Math.sin(this.angulo) * 0.02;
+        this.y += this.velocidadeY + Math.cos(this.angulo) * 0.02;
+        this.angulo += this.velocidadeAngulo;
+        
+        this.velocidadeX += (Math.random() - 0.5) * 0.006;
+        this.velocidadeY += (Math.random() - 0.5) * 0.006;
+        
+        this.velocidadeX = Math.min(Math.max(this.velocidadeX, -0.25), 0.25);
+        this.velocidadeY = Math.min(Math.max(this.velocidadeY, -0.25), 0.25);
+        
+        if (this.x < -10) this.x = canvas.width + 10;
+        if (this.x > canvas.width + 10) this.x = -10;
+        if (this.y < -10) this.y = canvas.height + 10;
+        if (this.y > canvas.height + 10) this.y = -10;
+      }
+      
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacidade;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.tamanho, 0, Math.PI * 2);
+        ctx.fillStyle = '#d4c4a8';
+        ctx.fill();
+        
+        if (this.tamanho > 1.5) {
+          ctx.shadowColor = 'rgba(200, 180, 150, 0.06)';
+          ctx.shadowBlur = 5;
+          ctx.fill();
+        }
+        
+        ctx.restore();
+      }
+    }
+    
+    for (let i = 0; i < NUM_PARTICULAS; i++) {
+      particulas.push(new Particula());
+    }
+    
+    function animarPoeira() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particulas.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animarPoeira);
+    }
+    
+    animarPoeira();
+
+    // ============================================
+    // 3. EFEITO PARALLAX SUAVE
+    // ============================================
+    const carta = document.getElementById('carta');
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentRotX = 0;
+    let currentRotY = 0;
+    
+    if (window.innerWidth > 768) {
+      document.addEventListener('mousemove', (e) => {
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        
+        mouseX = (e.clientX / windowWidth - 0.5) * 2;
+        mouseY = (e.clientY / windowHeight - 0.5) * 2;
+      });
+      
+      function parallaxCarta() {
+        if (carta) {
+          const targetRotY = mouseX * 0.15;
+          const targetRotX = mouseY * -0.15;
+          
+          currentRotX += (targetRotX - currentRotX) * 0.04;
+          currentRotY += (targetRotY - currentRotY) * 0.04;
+          
+          carta.style.transform = `rotate(${0.2 + currentRotY * 0.2}deg) perspective(1000px) rotateX(${currentRotX * 0.08}deg) rotateY(${currentRotY * 0.08}deg)`;
+          carta.style.transition = 'transform 0.05s linear';
+        }
+        requestAnimationFrame(parallaxCarta);
+      }
+      
+      parallaxCarta();
+    }
+
+    // ============================================
+    // 4. INTERAÇÃO COM BOTÃO
+    // ============================================
+    if (botaoResponder) {
+      botaoResponder.addEventListener('mouseenter', () => {
+        if (carta) {
+          carta.style.transition = 'transform 0.3s ease';
+          carta.style.transform = 'rotate(0.6deg) scale(1.008)';
+        }
+      });
+      
+      botaoResponder.addEventListener('mouseleave', () => {
+        if (carta) {
+          carta.style.transition = 'transform 0.5s ease';
+          carta.style.transform = 'rotate(0.2deg) scale(1)';
+        }
+      });
+      
+      botaoResponder.addEventListener('mousedown', () => {
+        if (carta) {
+          carta.style.transition = 'transform 0.08s ease';
+          carta.style.transform = 'rotate(0deg) scale(0.98)';
+        }
+      });
+      
+      botaoResponder.addEventListener('mouseup', () => {
+        if (carta) {
+          carta.style.transition = 'transform 0.3s ease';
+          carta.style.transform = 'rotate(0.2deg) scale(1)';
+        }
+      });
+    }
+
+    console.log('🏜️ Red Creek, 1876');
+    console.log('✉️ "Venha para Red Creek"');
+    console.log('👻 "não siga o som..."');
+    console.log('🔥 Firebase conectado!');
+  </script>
+</body>
+</html>

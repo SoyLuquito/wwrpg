@@ -363,7 +363,7 @@
       background-image: linear-gradient(165deg, #ede0ce 0%, #f5ebdb 25%, #f0e5d3 60%, #e4d5c0 100%);
       padding: 2.5rem 3rem;
       border-radius: 4px 40px 4px 40px;
-      max-width: 500px;
+      max-width: 450px;
       width: 100%;
       box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 0 2px #b89a78, 0 0 0 8px #c9af8b;
       transform: scale(0.9) rotate(-1deg);
@@ -425,8 +425,7 @@
       color: #3d2814;
       letter-spacing: 0.5px;
     }
-    .campo-input,
-    .campo-textarea {
+    .campo-input {
       font-family: 'Marck Script', 'Satisfy', cursive;
       font-size: 1.1rem;
       padding: 0.7rem 1rem;
@@ -437,21 +436,14 @@
       transition: all 0.3s ease;
       outline: none;
     }
-    .campo-input:focus,
-    .campo-textarea:focus {
+    .campo-input:focus {
       border-color: #b89a78;
       background: rgba(255, 248, 240, 0.8);
       box-shadow: 0 0 20px rgba(150, 120, 90, 0.1);
     }
-    .campo-input::placeholder,
-    .campo-textarea::placeholder {
+    .campo-input::placeholder {
       color: rgba(90, 63, 40, 0.3);
       font-style: italic;
-    }
-    .campo-textarea {
-      resize: vertical;
-      min-height: 60px;
-      font-family: 'Marck Script', cursive;
     }
 
     /* ===== BOTÕES DO MODAL ===== */
@@ -561,10 +553,10 @@
       .rodape { flex-direction: column; align-items: flex-start; gap: 1rem; }
       .assinatura-nome { font-size: 1.2rem; }
       .mancha-1, .mancha-2 { display: none; }
-      .modal-carta { padding: 1.8rem 1.5rem; border-radius: 4px 30px 4px 30px; }
+      .modal-carta { padding: 1.8rem 1.5rem; border-radius: 4px 30px 4px 30px; max-width: 100%; }
       .modal-titulo { font-size: 1.6rem; }
       .modal-descricao { font-size: 1rem; }
-      .campo-input, .campo-textarea { font-size: 1rem; padding: 0.6rem 0.8rem; }
+      .campo-input { font-size: 1rem; padding: 0.6rem 0.8rem; }
       .btn-cancelar, .btn-assinar { font-size: 1rem; padding: 0.6rem 1rem; }
       .modal-acoes { flex-direction: column; }
     }
@@ -670,16 +662,6 @@
             />
           </div>
           
-          <div class="campo-grupo">
-            <label for="mensagemAssinante" class="campo-label">Mensagem (opcional)</label>
-            <textarea 
-              id="mensagemAssinante" 
-              class="campo-textarea" 
-              placeholder="Deixe uma mensagem..."
-              rows="3"
-            ></textarea>
-          </div>
-          
           <div class="modal-acoes">
             <button type="button" class="btn-cancelar" id="btnCancelar">Cancelar</button>
             <button type="submit" class="btn-assinar" id="btnAssinar">
@@ -732,7 +714,6 @@
     const btnCancelar = document.getElementById('btnCancelar');
     const formAssinatura = document.getElementById('formAssinatura');
     const inputNome = document.getElementById('nomeAssinante');
-    const inputMensagem = document.getElementById('mensagemAssinante');
     const modalStatus = document.getElementById('modalStatus');
     const btnAssinar = document.getElementById('btnAssinar');
 
@@ -773,10 +754,10 @@
       e.preventDefault();
       
       const nome = inputNome.value.trim();
-      const mensagem = inputMensagem.value.trim();
       
       if (!nome) {
         mostrarStatus('Por favor, digite seu nome.', 'erro');
+        inputNome.focus();
         return;
       }
 
@@ -789,7 +770,6 @@
         // Salvar no Firestore
         await addDoc(collection(db, 'assinaturas'), {
           nome: nome,
-          mensagem: mensagem || '',
           data: serverTimestamp(),
           timestamp: new Date().toISOString()
         });
@@ -856,7 +836,7 @@
     const ctx = canvas.getContext('2d');
     
     let particulas = [];
-    const NUM_PARTICULAS = 120; // Aumentado para mais poeira
+    const NUM_PARTICULAS = 120;
     
     function resizeCanvas() {
       canvas.width = window.innerWidth;
